@@ -15,4 +15,9 @@ public class GuitarService(IGuitarRepository guitarRepository) : IGuitarService
     {
         return await guitarRepository.ListAllByPagination(pageIndex, pageSize);
     }
+
+    public async Task<Guitar> Add(Guitar guitar)
+    {
+        return await guitarRepository.Add(guitar);
+    }
 }

@@ -6,6 +6,7 @@ using PaginationResultWebApi.Services;
 using PaginationResultWebApi.Services.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -15,6 +16,11 @@ builder.Services.AddControllers().AddNewtonsoftJson(options => options.Serialize
 
 builder.Services.AddScoped<IGuitarService, GuitarService>();
 builder.Services.AddScoped<IGuitarRepository, GuitarRepository>();
+
+// MediatR
+builder.Services.AddMediatR(
+    cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly)
+    );
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

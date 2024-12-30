@@ -24,4 +24,11 @@ public class GuitarRepository(AppDbContext context) : IGuitarRepository
         var totalPages = (int)Math.Ceiling((double)count / pageSize);
         return new PaginatedList<Guitar>(guitars, pageIndex, totalPages);
     }
+
+    public  async Task<Guitar> Add(Guitar guitar)
+    {
+        var newGuitar = await context.Guitar.AddAsync(guitar);
+        await context.SaveChangesAsync();
+        return newGuitar.Entity;
+    }
 }

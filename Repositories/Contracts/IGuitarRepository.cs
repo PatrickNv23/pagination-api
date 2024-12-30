@@ -6,5 +6,6 @@ public interface IGuitarRepository
 {
     Task<List<Guitar>> ListAll();
     Task<PaginatedList<Guitar>> ListAllByPagination(int pageIndex, int pageSize);
+    Task<Guitar> Add(Guitar guitar);
     
 }
