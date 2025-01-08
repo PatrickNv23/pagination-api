@@ -1,15 +1,16 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using PaginationResultWebApi.Entities;
 using PaginationResultWebApi.Guitars.Commands;
 using PaginationResultWebApi.Guitars.Queries;
-using PaginationResultWebApi.Services.Contracts;
 using PaginationResultWebApi.Transport;
 
 namespace PaginationResultWebApi.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
+[EnableRateLimiting("fixed")]
 public class GuitarController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -21,6 +22,7 @@ public class GuitarController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("Pagination")]
+    [EnableRateLimiting("concurrency")]
     public async Task<ActionResult<ApiResponse>> GetGuitarsByPagination(int pageIndex = 1, int pageSize = 5)
     {
         return await _mediator.Send(
@@ -29,6 +31,7 @@ public class GuitarController(IMediator mediator) : ControllerBase
     }
     
     [HttpPost()]
+    [DisableRateLimiting]
     public async Task<ActionResult<ApiResponse>> AddGuitar(AddGuitarRequestDto addGuitarRequestDto)
     {
         return await _mediator.Send(

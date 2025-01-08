@@ -1,8 +1,6 @@
 using MediatR;
 using PaginationResultWebApi.Entities;
-using PaginationResultWebApi.Services;
 using PaginationResultWebApi.Services.Contracts;
-using PaginationResultWebApi.Transport;
 
 namespace PaginationResultWebApi.Guitars.Commands;
 

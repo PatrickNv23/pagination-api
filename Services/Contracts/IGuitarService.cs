@@ -1,5 +1,4 @@
 using PaginationResultWebApi.Entities;
-using PaginationResultWebApi.Transport;
 
 namespace PaginationResultWebApi.Services.Contracts;
 
