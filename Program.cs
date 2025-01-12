@@ -1,4 +1,7 @@
+using System.Security.Claims;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using PaginationResultWebApi.Data;
@@ -10,6 +13,9 @@ using PaginationResultWebApi.Services.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS NAME
+var corsPolicyName = "AllowSpecificOrigins";
+
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -18,13 +24,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 builder.Services.AddScoped<IGuitarService, GuitarService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGuitarRepository, GuitarRepository>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
 
 // MediatR
 builder.Services.AddMediatR(
     cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly)
     );
 
+// RATE LIMITING
 builder.Services.Configure<GeneralRateLimitOptions>(builder.Configuration.GetSection(GeneralRateLimitOptions.RateLimiting));
 builder.Services.Configure<GeneralRateLimitPolicies>(builder.Configuration.GetSection(GeneralRateLimitPolicies.RateLimitPolicies));
 
@@ -128,6 +138,50 @@ builder.Services.AddRateLimiter(options =>
     );
 });
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicyName, policy =>
+    {
+        policy
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .WithOrigins("http://localhost:4200", "https://localhost:4200");
+    });
+});
+
+// GOOGLE AUTH
+builder.Services.AddAuthentication(options => 
+    {
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    })
+    .AddCookie()
+    .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Google:ClientId"]!;
+        googleOptions.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
+        
+        googleOptions.Events.OnRedirectToAuthorizationEndpoint = context =>
+        {
+            context.Response.Redirect(context.RedirectUri + "&prompt=select_account");
+            return Task.CompletedTask;
+        };
+
+        googleOptions.Events.OnCreatingTicket = context =>
+        {
+            var picture = context.User.GetProperty("picture").GetString();
+
+            if (!string.IsNullOrEmpty(picture))
+            {
+                context?.Identity?.AddClaim(new Claim("picture", picture));
+            }
+
+            return Task.CompletedTask;
+        };
+    });
+
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -141,6 +195,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(corsPolicyName);
 
 app.UseRateLimiter();
 

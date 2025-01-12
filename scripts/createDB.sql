@@ -42,3 +42,15 @@ GO
 
 -- Mostrar todos los registros de tabla Guitar
 SELECT * FROM Guitar;
+GO
+
+-- Crear tabla Customer
+CREATE TABLE Customer (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(255) NOT NULL,
+    LastName NVARCHAR(255) NOT NULL,
+    Email NVARCHAR(255) NOT NULL,
+    Photo NVARCHAR(255),
+    Provider NVARCHAR(255)
+);
+GO

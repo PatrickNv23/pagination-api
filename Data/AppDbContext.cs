@@ -6,4 +6,5 @@ namespace PaginationResultWebApi.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<Guitar> Guitar { get; set; }
+    public DbSet<Customer> Customer { get; set; }
 }
