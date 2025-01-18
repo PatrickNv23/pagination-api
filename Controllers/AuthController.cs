@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PaginationResultWebApi.Common;
 using PaginationResultWebApi.UseCases.Auth.Commands;
 
 namespace PaginationResultWebApi.Controllers;
@@ -26,5 +27,17 @@ public class AuthController(IMediator mediator) : ControllerBase
         var apiResponse = await _mediator.Send(googleAuthCommand);
             
         return Redirect(apiResponse?.Data?.ToString()!);
+    }
+    
+    [HttpPost("Login")]
+    public async Task<AuthSessionResponse> Login([FromBody] LoginCommand loginCommand)
+    {
+        return await _mediator.Send(loginCommand);
+    }
+    
+    [HttpPost("RefreshToken")]
+    public async Task<AuthSessionResponse> RefreshToken([FromBody] RefreshTokenCommand refreshTokenCommand)
+    {
+        return await _mediator.Send(refreshTokenCommand);
     }
 }

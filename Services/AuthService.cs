@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using PaginationResultWebApi.Common;
 using PaginationResultWebApi.Data;
 using PaginationResultWebApi.Entities;
 using PaginationResultWebApi.Repositories.Contracts;
@@ -7,8 +9,54 @@ using PaginationResultWebApi.UseCases.Auth.Dtos;
 
 namespace PaginationResultWebApi.Services;
 
-public class AuthService(IAuthRepository authRepository) : IAuthService
+public class AuthService(IAuthRepository authRepository, IJwtTokenService jwtTokenService) : IAuthService
 {
+    public async Task<AuthSessionResponse> Login(LoginCommand loginCommand)
+    {
+        var customer = await authRepository.FindOneAsync(u => u.Email == loginCommand.Email);
+
+        if (customer == null)
+            throw new Exception("Customer is not registered");
+
+        if (string.IsNullOrEmpty(loginCommand.Password) || loginCommand.Password != customer.Password)
+            throw new Exception("Invalid password");
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Email, customer.Email),
+            new(ClaimTypes.GivenName, customer.FirstName)
+        };
+
+        var accessToken = jwtTokenService.GenerateAccessToken(claims);
+        var refreshToken = jwtTokenService.GenerateRefreshToken();
+        
+        var authSessionResponse = new AuthSessionResponse()
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
+
+        return authSessionResponse;
+    }
+    
+    public async Task<AuthSessionResponse> RefreshToken(RefreshTokenCommand refreshTokenCommand)
+    {
+        var principal = jwtTokenService.ValidateAccessToken(refreshTokenCommand.ExpiredAccessToken, ignoreExpiration: true);
+        if (principal == null) 
+            throw new Exception("Invalid token");
+        
+        var newAccessToken = jwtTokenService.GenerateAccessToken(principal.Claims);
+        var newRefreshToken = jwtTokenService.GenerateRefreshToken();
+        
+        var authSessionResponse = new AuthSessionResponse()
+        {
+            AccessToken = newAccessToken,
+            RefreshToken = newRefreshToken
+        };
+
+        return await Task.FromResult(authSessionResponse);
+    }
+    
     public async Task<ApiResponse> GoogleAuth(GoogleAuthCommand googleAuthCommand)
     {
         try

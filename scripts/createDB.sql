@@ -54,3 +54,10 @@ CREATE TABLE Customer (
     Provider NVARCHAR(255)
 );
 GO
+
+-- Agregar columna Password a tabla Customer
+ALTER TABLE Customer ADD Password NVARCHAR(255);
+
+-- Insertar un Customer con password simulando un registro normal por email y password
+INSERT INTO Customer (FirstName, LastName, Email, Password)
+VALUES ('Panvdev', 'Apellido', 'pruebapanv@email.com', '123123');

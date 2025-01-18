@@ -1,11 +1,14 @@
 using System.Security.Claims;
+using System.Text;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PaginationResultWebApi.Data;
-using PaginationResultWebApi.Entities;
+using PaginationResultWebApi.Data.Configuration;
 using PaginationResultWebApi.Repositories;
 using PaginationResultWebApi.Repositories.Contracts;
 using PaginationResultWebApi.Services;
@@ -25,6 +28,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options => options.Serialize
 
 builder.Services.AddScoped<IGuitarService, GuitarService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IGuitarRepository, GuitarRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
@@ -151,13 +155,31 @@ builder.Services.AddCors(options =>
     });
 });
 
-// GOOGLE AUTH
-builder.Services.AddAuthentication(options => 
+// GOOGLE AUTH AND JWT AUTH
+// builder.Services.AddAuthentication(options => 
+//     {
+//         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//         options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+//     })
+//     .AddCookie()
+builder.Services.AddAuthentication(options =>
     {
-        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddCookie()
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!)),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    })
     .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
     {
         googleOptions.ClientId = builder.Configuration["Google:ClientId"]!;
@@ -199,6 +221,8 @@ app.UseHttpsRedirection();
 app.UseCors(corsPolicyName);
 
 app.UseRateLimiter();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

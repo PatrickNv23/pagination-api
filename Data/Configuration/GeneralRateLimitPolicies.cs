@@ -1,4 +1,4 @@
-namespace PaginationResultWebApi.Entities;
+namespace PaginationResultWebApi.Data.Configuration;
 
 public class GeneralRateLimitPolicies
 {

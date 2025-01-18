@@ -1,4 +1,4 @@
-namespace PaginationResultWebApi.Entities;
+namespace PaginationResultWebApi.Common;
 
 public class ApiResponse(bool success, string? message, object? data = null)
 {

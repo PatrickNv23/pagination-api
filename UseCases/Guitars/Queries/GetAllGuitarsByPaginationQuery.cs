@@ -1,8 +1,8 @@
 using MediatR;
-using PaginationResultWebApi.Entities;
+using PaginationResultWebApi.Common;
 using PaginationResultWebApi.Services.Contracts;
 
-namespace PaginationResultWebApi.Guitars.Queries;
+namespace PaginationResultWebApi.UseCases.Guitars.Queries;
 
 public class GetAllGuitarsByPaginationQuery : IRequest<ApiResponse>
 {

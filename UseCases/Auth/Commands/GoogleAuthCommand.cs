@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using MediatR;
-using PaginationResultWebApi.Entities;
+using PaginationResultWebApi.Common;
 using PaginationResultWebApi.Services.Contracts;
 
 namespace PaginationResultWebApi.UseCases.Auth.Commands;

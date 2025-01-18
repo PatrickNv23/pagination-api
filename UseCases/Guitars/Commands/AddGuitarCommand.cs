@@ -1,8 +1,9 @@
 using MediatR;
+using PaginationResultWebApi.Common;
 using PaginationResultWebApi.Entities;
 using PaginationResultWebApi.Services.Contracts;
 
-namespace PaginationResultWebApi.Guitars.Commands;
+namespace PaginationResultWebApi.UseCases.Guitars.Commands;
 
 public class AddGuitarCommand : IRequest<ApiResponse>
 {
