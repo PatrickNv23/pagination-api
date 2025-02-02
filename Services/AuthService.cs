@@ -9,11 +9,11 @@ using PaginationResultWebApi.UseCases.Auth.Dtos;
 
 namespace PaginationResultWebApi.Services;
 
-public class AuthService(IAuthRepository authRepository, IJwtTokenService jwtTokenService) : IAuthService
+public class AuthService(IGenericRepository<Customer> customerRepository, IJwtTokenService jwtTokenService) : IAuthService
 {
     public async Task<AuthSessionResponse> Login(LoginCommand loginCommand)
     {
-        var customer = await authRepository.FindOneAsync(u => u.Email == loginCommand.Email);
+        var customer = await customerRepository.FindOneAsync(u => u.Email == loginCommand.Email);
 
         if (customer == null)
             throw new Exception("Customer is not registered");
@@ -86,7 +86,7 @@ public class AuthService(IAuthRepository authRepository, IJwtTokenService jwtTok
     
     private async Task<Customer> ProcessSocialAuthAction(SocialAuthDto socialAuthDto, SocialAuthUserClaimsDto socialAuthUserClaimsDto)
     {
-        var existingUser = await authRepository.FindOneAsync(u => u.Email == socialAuthUserClaimsDto.Email);
+        var existingUser = await customerRepository.FindOneAsync(u => u.Email == socialAuthUserClaimsDto.Email);
 
         if (socialAuthDto.Action == Constants.LOGIN_ACTION)
         {
@@ -113,7 +113,7 @@ public class AuthService(IAuthRepository authRepository, IJwtTokenService jwtTok
                 Provider = socialAuthDto.Provider
             };
 
-            await authRepository.AddAsync(customer);
+            await customerRepository.AddAsync(customer);
             return customer;
         }
 

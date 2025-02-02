@@ -18,7 +18,7 @@ public class GuitarController(IMediator mediator) : ControllerBase
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
      
     [HttpGet]
-    [Authorize]
+    // [Authorize]
     public async Task<ActionResult<ApiResponse>> GetGuitars()
     {
         return await _mediator.Send(new GetAllGuitarsQuery());
