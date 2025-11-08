@@ -46,4 +46,10 @@ public class GuitarController(IMediator mediator) : ControllerBase
             }
         );
     }
+    
+    [HttpGet("ListSearchSuggestions")]
+    public async Task<ActionResult<ApiResponse>> ListSearchSuggestions([FromQuery] ListSearchSuggestionsQuery listSearchSuggestionsQuery)
+    {
+        return await _mediator.Send(listSearchSuggestionsQuery);
+    }
 }

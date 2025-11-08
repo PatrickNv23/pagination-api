@@ -20,4 +20,9 @@ public class GuitarService(IGenericRepository<Guitar> guitarRepository) : IGuita
     {
         return await guitarRepository.AddAsync(guitar);
     }
+
+    public async Task<List<Guitar>> ListSearchSuggestions(string searchTerm)
+    {
+        return await guitarRepository.FindFuzzyAsync(searchTerm, ["Name", "Model", "Brand"]);
+    }
 }

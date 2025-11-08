@@ -7,4 +7,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<Guitar> Guitar { get; set; }
     public DbSet<Customer> Customer { get; set; }
+
+    [DbFunction(name: "SOUNDEX", IsBuiltIn = true)]
+    public string FuzzySearch(string query)
+    {
+        throw new NotImplementedException();
+    }
 }

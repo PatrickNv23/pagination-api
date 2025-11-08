@@ -37,4 +37,33 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> 
         var totalPages = (int)Math.Ceiling((double)count / pageSize);
         return new PaginatedList<T>(entities, pageIndex, totalPages);
     }
+
+    public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await context.Set<T>()
+            .AsNoTracking()
+            .Where(predicate)
+            .ToListAsync();
+    }
+
+    public async Task<List<T>> FindFuzzyAsync(string searchTerm, List<string> propertyNames)
+    {
+        var query = context.Set<T>().AsNoTracking();
+        var results = new List<T>();
+
+        foreach (var propertyName in propertyNames)
+        {
+            var currentPropertyName = propertyName;
+            var partialResults = await query
+                .Where(x => context.FuzzySearch(searchTerm) == 
+                            context.FuzzySearch(EF.Property<string>(x, currentPropertyName)))
+                .ToListAsync();
+            
+            results.AddRange(partialResults);        
+        }
+
+        return results
+            .Distinct()
+            .ToList();
+    }
 }

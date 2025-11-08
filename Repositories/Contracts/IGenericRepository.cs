@@ -9,4 +9,6 @@ public interface IGenericRepository<T> where T : class
     Task<T> AddAsync(T entity);
     Task<T> FindOneAsync(Expression<Func<T, bool>> predicate);
     Task<PaginatedList<T>> ListAllByPagination(int pageIndex, int pageSize, Expression<Func<T, object>> orderExpression);
+    Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate);
+    Task<List<T>> FindFuzzyAsync(string searchTerm, List<string> propertyNames);
 }
