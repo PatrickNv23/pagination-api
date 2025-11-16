@@ -52,4 +52,10 @@ public class GuitarController(IMediator mediator) : ControllerBase
     {
         return await _mediator.Send(listSearchSuggestionsQuery);
     }
+    
+    [HttpGet("ListBestSuggestions")]
+    public async Task<ActionResult<ApiResponse>> ListBestSuggestions([FromQuery] ListBestSuggestionsQuery listBestSuggestionsQuery)
+    {
+        return await _mediator.Send(listBestSuggestionsQuery);
+    }
 }
