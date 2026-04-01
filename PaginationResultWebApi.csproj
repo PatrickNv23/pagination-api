@@ -7,22 +7,25 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="UseCases\Auth\Queries\**" />
+      <Content Remove="UseCases\Auth\Queries\**" />
+      <EmbeddedResource Remove="UseCases\Auth\Queries\**" />
+      <None Remove="UseCases\Auth\Queries\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
         <PackageReference Include="MediatR" Version="12.4.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="UseCases\Auth\Queries\" />
     </ItemGroup>
 
 </Project>

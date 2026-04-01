@@ -6,8 +6,8 @@ namespace PaginationResultWebApi.UseCases.Auth.Commands;
 
 public class RefreshTokenCommand : IRequest<AuthSessionResponse>
 {
-    public string ExpiredAccessToken { get; set; }
-    public string RefreshToken { get; set; }
+    public string ExpiredAccessToken { get; set; } = string.Empty;
+    public string RefreshToken { get; set; } = string.Empty;
 }
 
 public class RefreshTokenCommandHandler(IAuthService _authService) : IRequestHandler<RefreshTokenCommand, AuthSessionResponse>

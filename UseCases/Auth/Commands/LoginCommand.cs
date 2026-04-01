@@ -1,16 +1,16 @@
-using System.ComponentModel.DataAnnotations;
 using MediatR;
 using PaginationResultWebApi.Common;
 using PaginationResultWebApi.Services.Contracts;
+using System.ComponentModel.DataAnnotations;
 
 namespace PaginationResultWebApi.UseCases.Auth.Commands;
 
 public class LoginCommand : IRequest<AuthSessionResponse>
 {
     [Required]
-    public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
     [Required]
-    public string Password { get; set; }
+    public string Password { get; set; } = string.Empty;
 }
 
 public class LoginCommandHandler(IAuthService _authService) : IRequestHandler<LoginCommand, AuthSessionResponse>
